@@ -19,10 +19,11 @@ class Test(unittest.TestCase):
         x0 = np.array((0, 0), dtype=np.float64)
 
         result_x, result_f = fletcher_reeves(
-            func, 0.01, DerivationMethod.SYM_DIFF,
+            func,
             x0,
+            DerivationMethod.SYM_DIFF, 0.01,
             dsk_powell, 0.1, 0.01,
-            0.01, TerminationCriterion.X_AND_F_CHANGE,
+            Modification.FLETCHER_REEVES, TerminationCriterion.X_AND_F_CHANGE, 0.01,
             output_receiver=self.output
         )
 

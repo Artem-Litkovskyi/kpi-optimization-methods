@@ -14,6 +14,11 @@ class TerminationCriterion(Enum):
     NABLA_NORM = 3
 
 
+class Modification(Enum):
+    FLETCHER_REEVES = 1
+    POLAK_RIBIERE = 2
+
+
 def get_func_of_lambda(func: Callable, x_prev: np.array, s: np.array):
     return lambda lamb: func(*(x_prev + lamb * s))
 
@@ -21,10 +26,11 @@ def get_func_of_lambda(func: Callable, x_prev: np.array, s: np.array):
 # =======================================================================================
 def fletcher_reeves(
         func: Callable,
-        derivation_h: float, derivation_method: DerivationMethod,
         x0: np.ndarray,
+        derivation_method: DerivationMethod, derivation_h: float,
         lambda_method: Callable, delta_lambda: float, lambda_accuracy: float,
-        accuracy: float, termination_criterion: TerminationCriterion,
+        modification: Modification, termination_criterion: TerminationCriterion, accuracy: float,
+        restart_lambda_threshold: float = -1,
         max_iter: int = -1,
         output_receiver: Callable = None
 ):
@@ -37,10 +43,11 @@ def fletcher_reeves(
 
     return _fletcher_reeves(
         func,
-        derivation_h, derivation_method,
         x0, f0, s0, nabla0,
+        derivation_method, derivation_h,
         lambda_method, delta_lambda, lambda_accuracy,
-        accuracy, termination_criterion,
+        modification, termination_criterion, accuracy,
+        restart_lambda_threshold,
         max_iter, 1,
         output_receiver
     )
@@ -48,10 +55,11 @@ def fletcher_reeves(
 
 def _fletcher_reeves(
         func,
-        derivation_h, derivation_method,
         x0, f0, s0, nabla0,
+        derivation_method, derivation_h,
         lambda_method, delta_lambda, lambda_accuracy,
-        accuracy, termination_criterion,
+        modification, termination_criterion, accuracy,
+        restart_lambda_threshold,
         max_iter, iter_n,
         output_receiver
 ):
@@ -69,6 +77,9 @@ def _fletcher_reeves(
             lambda_interval = lambda_opt_x_interval,
             lambda_opt = lambda_opt
         )
+
+    if restart_lambda_threshold > 0 and lambda_opt < restart_lambda_threshold:
+        s0 = -nabla0  # restart
 
     x1 = x0 + lambda_opt * s0
     nabla1 = nabla(func, x1, derivation_h, derivation_method, f0=f1)
@@ -91,15 +102,24 @@ def _fletcher_reeves(
     if terminate:
         return x1, f1
 
-    s1 = -nabla1 + np.inner(nabla1, nabla1) / np.inner(nabla0, nabla0) * s0
-
-    # TODO: restart
+    s1 = -nabla1 + _fletcher_reeves_w(nabla0, nabla1, modification) * s0
 
     return _fletcher_reeves(
-        func, derivation_h, derivation_method,
+        func,
         x1, f1, s1, nabla1,
+        derivation_method, derivation_h,
         lambda_method, delta_lambda, lambda_accuracy,
-        accuracy, termination_criterion,
+        modification, termination_criterion, accuracy,
+        restart_lambda_threshold,
         max_iter, iter_n + 1,
         output_receiver
     )
+
+
+def _fletcher_reeves_w(nabla0, nabla1, modification):
+    if modification == Modification.FLETCHER_REEVES:
+        return max(0, np.inner(nabla1, nabla1) / np.inner(nabla0, nabla0))
+    elif modification == Modification.POLAK_RIBIERE:
+        return max(0, np.inner(nabla1, nabla1 - nabla0) / np.inner(nabla0, nabla0))
+    else:
+        raise ValueError('Unknown modification')
