@@ -1,6 +1,9 @@
+import numpy as np
+
 from custom_types import *
 
 
+GOLDEN_SECTION_A = 2 / (3 + np.sqrt(5))
 NOT_UNIMODAL_ERROR = ValueError('Function isn\'t unimodal')
 
 
@@ -84,8 +87,8 @@ def golden_section(func: Callable, xs: tuple, fs: tuple, accuracy: float):
 
     length = xs[-1] - xs[0]
 
-    left_golden_x = xs[0] + 0.382 * length
-    right_golden_x = xs[0] + 0.618 * length
+    left_golden_x = xs[0] + GOLDEN_SECTION_A * length
+    right_golden_x = xs[0] + (1 - GOLDEN_SECTION_A) * length
     left_golden_f = func(left_golden_x)
     right_golden_f = func(right_golden_x)
 
@@ -99,7 +102,7 @@ def golden_section(func: Callable, xs: tuple, fs: tuple, accuracy: float):
 
 
 def _golden_section(func, xs, fs, length, accuracy):
-    # print('xs: %s;\tfs: %s\tL: %0.3f' % (utils.floats_to_str(xs), utils.floats_to_str(fs), length))
+    # print('xs: %s;\tfs: %s\tL: %0.3f' % (xs, fs, length))
 
     if length <= accuracy:
         return (xs[0] + xs[-1]) / 2, (fs[0] + fs[-1]) / 2
@@ -156,28 +159,26 @@ def dsk_powell(func: Callable, xs: tuple, fs: tuple, accuracy: float):
     :return: x* and f(x*)
     """
 
-    # On the first iteration we can use simpler calculations, because xs are evenly spaced
-    delta = xs[1] - xs[0]
-    approx_x = xs[1] + (delta * (fs[0] - fs[2])) / (2 * (fs[0] - 2 * fs[1] + fs[2]))
-    approx_f = func(approx_x)
+    approx_x, approx_f = _dsk_powell_approx(func, xs, fs)
 
-    return _dsk_powell(func, xs, fs, approx_x, approx_f, accuracy)
-
-
-def _dsk_powell(func, xs, fs, approx_x, approx_f, accuracy):
-    # print('xs: %s;\tfs: %s\tx*: %0.3f\tf*: %0.3f' % (utils.floats_to_str(xs), utils.floats_to_str(fs), approx_x, approx_f))
     if abs(xs[1] - approx_x) <= accuracy and abs(fs[1] - approx_f) <= accuracy:
         return approx_x, approx_f
 
     if approx_x < xs[1]:
-        return _dsk_powell_iter(func, (xs[0], approx_x, xs[1]), (fs[0], approx_f, fs[1]), accuracy)
+        return dsk_powell(func, (xs[0], approx_x, xs[1]), (fs[0], approx_f, fs[1]), accuracy)
     else:
-        return _dsk_powell_iter(func, (xs[1], approx_x, xs[2]), (fs[1], approx_f, fs[2]), accuracy)
+        return dsk_powell(func, (xs[1], approx_x, xs[2]), (fs[1], approx_f, fs[2]), accuracy)
 
 
-def _dsk_powell_iter(func, xs, fs, accuracy):
+def _dsk_powell_approx(func, xs, fs):
     a1 = (fs[1] - fs[0]) / (xs[1] - xs[0])
     a2 = ((fs[2] - fs[0]) / (xs[2] - xs[0]) - a1) / (xs[2] - xs[1])
     approx_x = (xs[0] + xs[1]) / 2 - a1 / 2 / a2
     approx_f = func(approx_x)
-    return _dsk_powell(func, xs, fs, approx_x, approx_f, accuracy)
+
+    if np.isnan(approx_x):
+        i = np.argmin(fs)
+        approx_x = xs[i]
+        approx_f = fs[i]
+
+    return approx_x, approx_f

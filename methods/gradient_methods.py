@@ -25,6 +25,7 @@ def fletcher_reeves(
         x0: np.ndarray,
         lambda_method: Callable, delta_lambda: float, lambda_accuracy: float,
         accuracy: float, termination_criterion: TerminationCriterion,
+        max_iter: int = -1,
         output_receiver: Callable = None
 ):
     if x0.dtype != np.float64:
@@ -40,6 +41,7 @@ def fletcher_reeves(
         x0, f0, s0, nabla0,
         lambda_method, delta_lambda, lambda_accuracy,
         accuracy, termination_criterion,
+        max_iter, 1,
         output_receiver
     )
 
@@ -50,6 +52,7 @@ def _fletcher_reeves(
         x0, f0, s0, nabla0,
         lambda_method, delta_lambda, lambda_accuracy,
         accuracy, termination_criterion,
+        max_iter, iter_n,
         output_receiver
 ):
     func_lamb = get_func_of_lambda(func, x0, s0)
@@ -58,6 +61,7 @@ def _fletcher_reeves(
 
     if output_receiver:
         output_receiver(
+            iter_n = iter_n,
             x = x0,
             f = f0,
             nabla = nabla0,
@@ -81,6 +85,9 @@ def _fletcher_reeves(
     else:
         raise ValueError('Unknown termination criterion')
 
+    if iter_n == max_iter:
+        terminate = True
+
     if terminate:
         return x1, f1
 
@@ -93,5 +100,6 @@ def _fletcher_reeves(
         x1, f1, s1, nabla1,
         lambda_method, delta_lambda, lambda_accuracy,
         accuracy, termination_criterion,
+        max_iter, iter_n + 1,
         output_receiver
     )

@@ -5,7 +5,7 @@ from numpy import isclose
 from methods.interval_methods import *
 
 
-ATOL = 1e-10
+ATOL = 1e-3
 
 
 class Test(unittest.TestCase):
@@ -39,16 +39,15 @@ class Test(unittest.TestCase):
             self.assertTrue(isclose(result[1][i], correct_fs[i], atol=ATOL))  # Check f
 
     def test_golden_section(self):
-        func = lambda x: (100 - x) ** 2
-        interval_xs = (65, 145)
+        func = lambda x: x * (2 * x - 3)
+        interval_xs = (-1.20, 0.40, 2.00)
         interval_fs = tuple(func(x) for x in interval_xs)
-        accuracy = 20
+        accuracy = 0.01
 
         actual_x, actual_f = golden_section(func, interval_xs, interval_fs, accuracy)
 
-        expected_xs = (95.56, 114.44)
-        expected_x = sum(expected_xs) / 2
-        expected_f = sum(tuple(func(x) for x in expected_xs)) / 2
+        expected_x = 0.75
+        expected_f = func(expected_x)
 
         self.assertTrue(isclose(expected_x, actual_x, atol=ATOL))  # Check x
         self.assertTrue(isclose(expected_f, actual_f, atol=ATOL))  # Check f

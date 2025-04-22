@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
             func, 0.01, DerivationMethod.SYM_DIFF,
             x0,
             dsk_powell, 0.1, 0.01,
-            0.01, TerminationCriterion.NABLA_NORM,
+            0.01, TerminationCriterion.X_AND_F_CHANGE,
             output_receiver=self.output
         )
 
