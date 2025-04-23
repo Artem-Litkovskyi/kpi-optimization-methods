@@ -48,7 +48,7 @@ def fletcher_reeves(
         lambda_method, delta_lambda, lambda_accuracy,
         modification, termination_criterion, accuracy,
         restart_lambda_threshold,
-        max_iter, 1,
+        max_iter, 0,
         output_receiver
     )
 

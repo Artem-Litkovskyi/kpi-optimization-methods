@@ -161,13 +161,18 @@ def dsk_powell(func: Callable, xs: tuple, fs: tuple, accuracy: float):
 
     approx_x, approx_f = _dsk_powell_approx(func, xs, fs)
 
+    # print('xs: %s\t\tfs: %s\t\tapprox_x: %f\t\tapprox_f: %f' % (vector_to_str(xs), vector_to_str(fs), approx_x, approx_f))
+
     if abs(xs[1] - approx_x) <= accuracy and abs(fs[1] - approx_f) <= accuracy:
         return approx_x, approx_f
 
-    if approx_x < xs[1]:
-        return dsk_powell(func, (xs[0], approx_x, xs[1]), (fs[0], approx_f, fs[1]), accuracy)
-    else:
-        return dsk_powell(func, (xs[1], approx_x, xs[2]), (fs[1], approx_f, fs[2]), accuracy)
+    # Choose a point with the lowest function value and two points around it
+    new_points = sorted(zip([*xs, approx_x], [*fs, approx_f]), key=lambda p: p[0])
+    min_i = np.argmin(tuple(map(lambda p: p[1], new_points)))
+    new_xs = tuple(p[0] for p in new_points[min_i-1:min_i+2])
+    new_fs = tuple(p[1] for p in new_points[min_i-1:min_i+2])
+
+    return dsk_powell(func, new_xs, new_fs, accuracy)
 
 
 def _dsk_powell_approx(func, xs, fs):
@@ -182,3 +187,7 @@ def _dsk_powell_approx(func, xs, fs):
         approx_f = fs[i]
 
     return approx_x, approx_f
+
+
+# def vector_to_str(v):
+#     return '(%s)' % ', '.join(map(lambda x: '%f' % x, v))
