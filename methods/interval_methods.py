@@ -168,7 +168,7 @@ def dsk_powell(func: Callable, xs: tuple, fs: tuple, accuracy: float):
 
     # Choose a point with the lowest function value and two points around it
     new_points = sorted(zip([*xs, approx_x], [*fs, approx_f]), key=lambda p: p[0])
-    min_i = np.argmin(tuple(map(lambda p: p[1], new_points)))
+    min_i = min(2, max(1, np.argmin(tuple(map(lambda p: p[1], new_points)))))
     new_xs = tuple(p[0] for p in new_points[min_i-1:min_i+2])
     new_fs = tuple(p[1] for p in new_points[min_i-1:min_i+2])
 

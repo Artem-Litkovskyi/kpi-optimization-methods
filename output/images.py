@@ -52,7 +52,7 @@ def search_path(
         mlines.Line2D([], [], color='r', marker='x', linestyle='None', label='Actual minimum')
     ])
 
-    plt.savefig(os.path.join(IMAGES_DIR, 'search_' + filename), dpi=DPI)
+    plt.savefig(os.path.join(IMAGES_DIR, 'path_' + filename), dpi=DPI)
 
 
 def surface(func, start_point, real_target, xlim, ylim, title, filename):
@@ -84,4 +84,37 @@ def surface(func, start_point, real_target, xlim, ylim, title, filename):
 
     fig.tight_layout()
 
+    # decorations
+    plt.suptitle(title)
+
     plt.savefig(os.path.join(IMAGES_DIR, 'surface_' + filename), dpi=DPI)
+
+
+def calls_and_deviation(
+        values, calls, deviations,
+        change_param, old_v, new_v,
+        title, filename
+):
+    # plot
+    fig, ax = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True)
+
+    ax[0].plot(values, calls, color='black')
+    ax[0].vlines((old_v, new_v), min(calls), max(calls), colors=['gray', 'green'], linestyles=['--', '-'])
+    ax[0].set_xlabel(change_param)
+    ax[0].set_ylabel('calls')
+
+    ax[1].plot(values, deviations, color='black')
+    ax[1].vlines((old_v, new_v), min(deviations), max(deviations), colors=['gray', 'green'], linestyles=['--', '-'])
+    ax[1].set_xlabel(change_param)
+    ax[1].set_ylabel('deviation')
+
+    # decorations
+    plt.suptitle(title)
+    ax[1].legend(
+        [mlines.Line2D([0], [0], color='gray'),
+         mlines.Line2D([0], [0], color='green')],
+        ['old', 'new'],
+        loc='upper right'
+    )
+
+    plt.savefig(os.path.join(IMAGES_DIR, 'plot_' + filename), dpi=DPI)

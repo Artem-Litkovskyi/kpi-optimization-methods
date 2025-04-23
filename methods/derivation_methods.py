@@ -6,9 +6,9 @@ from custom_types import *
 
 
 class DerivationMethod(Enum):
-    RIGHT_DIFF = 1
-    LEFT_DIFF = 2
-    SYM_DIFF = 3
+    RIGHT_DIFF = 'right'
+    LEFT_DIFF = 'left'
+    SYM_DIFF = 'sym'
 
 
 def nabla(func: Callable, x0: np.ndarray, h: float, method = DerivationMethod.SYM_DIFF, f0 = None) -> np.ndarray:
@@ -28,9 +28,9 @@ def nabla(func: Callable, x0: np.ndarray, h: float, method = DerivationMethod.SY
             result[i] = (func(*tmp) - f0) / h
         else:
             tmp1 = deepcopy(x0)
-            tmp1[i] = tmp1[i] - h
+            tmp1[i] = tmp1[i] + h
             tmp2 = deepcopy(x0)
-            tmp2[i] = tmp2[i] + h
+            tmp2[i] = tmp2[i] - h
             result[i] = (func(*tmp1) - func(*tmp2)) / 2 / h
 
     return result
