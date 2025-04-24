@@ -1,8 +1,8 @@
-import numpy as np
+from typing import Callable
 from copy import deepcopy
 from enum import Enum
 
-from custom_types import *
+import numpy as np
 
 
 class DerivationMethod(Enum):

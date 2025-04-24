@@ -2,7 +2,7 @@ import os.path
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
+from matplotlib.lines import Line2D
 from matplotlib import cm
 
 
@@ -16,41 +16,66 @@ if not os.path.exists(IMAGES_DIR):
 
 def search_path(
         func, real_target, path_points, title, filename,
-        levels_n=7, pad_big=0.25, pad_small=0.05
+        levels_n=7, pad_big=0.25, pad_small=0.05,
+        constraints=None, constrained_target=None
 ):
     path_xs = [p[0] for p in path_points]
     path_ys = [p[1] for p in path_points]
 
-    # make data for contour
-    x, y = np.meshgrid(
-        np.linspace(min(path_xs)-pad_big, max(path_xs)+pad_big, 256),
-        np.linspace(min(path_ys)-pad_big, max(path_ys)+pad_big, 256)
-    )
+    # Calculate plot limits
+    big_xlim = (min(*path_xs, real_target[0]) - pad_big, max(*path_xs, real_target[0]) + pad_big)
+    big_ylim = (min(*path_ys, real_target[1]) - pad_big, max(*path_ys, real_target[0]) + pad_big)
+    if constrained_target is not None:
+        big_xlim = (min(big_xlim[0], constrained_target[0] - pad_big), max(big_xlim[1], constrained_target[0] + pad_big))
+        big_ylim = (min(big_ylim[0], constrained_target[1] - pad_big), max(big_ylim[1], constrained_target[1] + pad_big))
 
+    active_target = real_target
+    if constrained_target is not None:
+        active_target = constrained_target
+    small_xlim=(active_target[0] - pad_small, active_target[0] + pad_small)
+    small_ylim=(active_target[1] - pad_small, active_target[1] + pad_small)
+
+    # Make data
+    x, y = np.meshgrid(np.linspace(*big_xlim, 1024), np.linspace(*big_ylim, 1024))
     z = func(x, y)
     levels = np.linspace(np.min(z), np.max(z), levels_n)
 
-    # plot
+    # Plot
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True)
 
     for i in range(2):
+        # Contour
         ax[i].contour(x, y, z, levels=levels, alpha=0.25)
-        ax[i].plot(path_xs, path_ys, marker='.', color='k')
-        ax[i].plot(*real_target, 'rx')
-        if i == 0:
-            ax[i].set_aspect('equal', 'box')
-        else:
-            ax[i].set_aspect('equal')
-            ax[i].set(
-                xlim=(real_target[0]-pad_small, real_target[0]+pad_small),
-                ylim=(real_target[1]-pad_small, real_target[1]+pad_small)
+
+        # Feasible region
+        if constraints is not None:
+            ax[i].imshow(
+                np.logical_not(np.logical_and.reduce([c(x, y) <= 0 for c in constraints])).astype(int),
+                extent=(x.min(), x.max(), y.min(), y.max()), origin='lower', cmap='Greys', alpha=0.3
             )
 
-    # decorations
+        # Search path
+        ax[i].plot(path_xs, path_ys, marker='.', color='k')
+
+        # Targets
+        ax[i].plot(*real_target, 'rx')
+        if constrained_target is not None:
+            ax[i].plot(*constrained_target, 'gx')
+
+        # Zoom for left plot
+        if i == 0:
+            ax[i].set_aspect('equal', 'box')
+        # Zoom for right plot
+        else:
+            ax[i].set_aspect('equal')
+            ax[i].set(xlim=small_xlim, ylim=small_ylim)
+
+    # Decorations
     plt.suptitle(title)
-    plt.legend(handles=[
-        mlines.Line2D([], [], color='r', marker='x', linestyle='None', label='Actual minimum')
-    ])
+    handles =[Line2D([], [], color='r', marker='x', linestyle='None', label='Minimum')]
+    if constrained_target is not None:
+        handles.append(Line2D([], [], color='g', marker='x', linestyle='None', label='Minimum inside the region'))
+    plt.legend(handles=handles)
 
     plt.savefig(os.path.join(IMAGES_DIR, 'path_' + filename), dpi=DPI)
 
@@ -111,8 +136,8 @@ def calls_and_deviation(
     # decorations
     plt.suptitle(title)
     ax[1].legend(
-        [mlines.Line2D([0], [0], color='gray'),
-         mlines.Line2D([0], [0], color='green')],
+        [Line2D([0], [0], color='gray'),
+         Line2D([0], [0], color='green')],
         ['old', 'new'],
         loc='upper right'
     )

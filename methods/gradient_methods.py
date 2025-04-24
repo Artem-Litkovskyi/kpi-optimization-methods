@@ -1,10 +1,10 @@
+from typing import Callable
 from enum import Enum
 
 import numpy as np
 
 from methods.derivation_methods import DerivationMethod, nabla
 from methods.interval_methods import sven
-from custom_types import *
 
 
 # =======================================================================================
@@ -14,8 +14,8 @@ class TerminationCriterion(Enum):
 
 
 class Modification(Enum):
-    FLETCHER_REEVES = 1
-    POLAK_RIBIERE = 2
+    FLETCHER_REEVES = 'fletcher_reeves'
+    POLAK_RIBIERE = 'polak_ribiere'
 
 
 def get_func_of_lambda(func: Callable, x_prev: np.array, s: np.array):

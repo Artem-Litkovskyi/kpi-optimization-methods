@@ -1,6 +1,6 @@
-import numpy as np
+from typing import Callable
 
-from custom_types import *
+import numpy as np
 
 
 GOLDEN_SECTION_A = 2 / (3 + np.sqrt(5))
