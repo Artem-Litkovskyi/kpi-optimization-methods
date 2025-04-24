@@ -1,4 +1,3 @@
-import os
 from copy import deepcopy
 
 import numpy as np
@@ -76,15 +75,7 @@ def main():
     render_search_path(params, 'Restart threshold: λ=0.24', 'restart')
 
     # ===
-    part4_termination(params)
-
-    params['termination_criterion'] = TerminationCriterion.X_AND_F_CHANGE
-    params['accuracy'] = 1e-6
-
-    render_search_path(params, 'Termination criterion 1, ε=1E-6', 'termination')
-
-    # ===
-    part5_derivation(params)
+    part4_derivation(params)
 
     params['derivation_method'] = DerivationMethod.SYM_DIFF
     params['derivation_h'] = 1
@@ -92,19 +83,18 @@ def main():
     render_search_path(params, 'Symmetric difference, h=1', 'derivation')
 
     # ===
+    part5_termination(params)
+
+    params['termination_criterion'] = TerminationCriterion.X_AND_F_CHANGE
+    params['accuracy'] = 1e-9
+
+    # ===
     params['modification'] = Modification.POLAK_RIBIERE
 
     render_search_path(params, 'Polak-Ribiere', 'polak_ribiere')
 
-    # ===
-    part1_svenn(params, 0.14, number=2)
 
-    params['delta_lambda'] = 0.14
-
-    render_search_path(params, 'Δλ=0.14', 'svenn2')
-
-
-def part1_svenn(base_params: dict, new_v, number=None):
+def part1_svenn(base_params: dict, new_v):
     params = deepcopy(base_params)
 
     values = np.linspace(1e-5, 0.5, 128)
@@ -117,7 +107,7 @@ def part1_svenn(base_params: dict, new_v, number=None):
         [r['deviation'] for r in results],
         'Δλ', base_params['delta_lambda'], new_v,
         None,
-        'svenn' + [str(number), ''][number is None]
+        'svenn'
     )
 
 
@@ -156,9 +146,9 @@ def part3_restart(base_params: dict, new_v):
     )
 
 
-def part4_termination(base_params: dict):
+def part5_termination(base_params: dict):
     values1 = (TerminationCriterion.X_AND_F_CHANGE, TerminationCriterion.S_NORM)
-    values2 = (1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9)
+    values2 = (1e-7, 1e-8, 1e-9, 1e-10, 1e-11)
 
     results = feed_values_2d(
         base_params,
@@ -174,7 +164,7 @@ def part4_termination(base_params: dict):
     )
 
 
-def part5_derivation(base_params: dict):
+def part4_derivation(base_params: dict):
     values1 = (DerivationMethod.LEFT_DIFF, DerivationMethod.RIGHT_DIFF, DerivationMethod.SYM_DIFF)
     values2 = (1e+3, 1e+2, 1e+1, 1, 1e-1, 1e-2, 1e-3)
 
@@ -190,24 +180,6 @@ def part5_derivation(base_params: dict):
         map(lambda v: '%.0E' % v, values2),
         'derivation'
     )
-
-
-# def part6_polak_ribiere(base_params: dict):
-#     values1 = (Modification.POLAK_RIBIERE, DerivationMethod.RIGHT_DIFF, DerivationMethod.SYM_DIFF)
-#     values2 = (1e+3, 1e+2, 1e+1, 1, 1e-1, 1e-2, 1e-3)
-#
-#     results = feed_values_2d(
-#         base_params,
-#         'derivation_method', values1,
-#         'derivation_h', values2,
-#     )
-#
-#     tbl.calls_and_deviation(
-#         results,
-#         map(lambda v: v.value, values1),
-#         map(lambda v: '%.0E' % v, values2),
-#         'derivation'
-#     )
 
 
 def render_search_path(base_params: dict, title: str, filename: str):
