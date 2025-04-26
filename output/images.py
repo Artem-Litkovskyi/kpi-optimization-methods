@@ -10,12 +10,8 @@ DPI = 200
 IMAGES_DIR = 'images'
 
 
-if not os.path.exists(IMAGES_DIR):
-    os.makedirs(IMAGES_DIR)
-
-
 def search_path(
-        func, real_target, path_points, title, filename,
+        func, real_target, path_points, title, subdir, filename,
         levels_n=7, pad_big=0.25, pad_small=0.05,
         constraints=None, constrained_target=None
 ):
@@ -77,10 +73,13 @@ def search_path(
         handles.append(Line2D([], [], color='g', marker='x', linestyle='None', label='Minimum inside the region'))
     plt.legend(handles=handles)
 
-    plt.savefig(os.path.join(IMAGES_DIR, 'path_' + filename), dpi=DPI)
+    dir_path = os.path.join(IMAGES_DIR, subdir)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    plt.savefig(os.path.join(dir_path, 'path_' + filename), dpi=DPI)
 
 
-def surface(func, start_point, real_target, xlim, ylim, title, filename):
+def surface(func, start_point, real_target, xlim, ylim, title, subdir, filename):
     # make data
     x, y = np.meshgrid(
         np.linspace(*xlim, num=256),
@@ -112,13 +111,16 @@ def surface(func, start_point, real_target, xlim, ylim, title, filename):
     # decorations
     plt.suptitle(title)
 
-    plt.savefig(os.path.join(IMAGES_DIR, 'surface_' + filename), dpi=DPI)
+    dir_path = os.path.join(IMAGES_DIR, subdir)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    plt.savefig(os.path.join(dir_path, 'surface_' + filename), dpi=DPI)
 
 
 def calls_and_deviation(
         values, calls, deviations,
         change_param, old_v, new_v,
-        title, filename
+        title, subdir, filename
 ):
     # plot
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True)
@@ -142,4 +144,7 @@ def calls_and_deviation(
         loc='upper right'
     )
 
-    plt.savefig(os.path.join(IMAGES_DIR, 'plot_' + filename), dpi=DPI)
+    dir_path = os.path.join(IMAGES_DIR, subdir)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    plt.savefig(os.path.join(dir_path, 'plot_' + filename), dpi=DPI)

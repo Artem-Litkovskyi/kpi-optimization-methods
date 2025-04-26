@@ -19,6 +19,7 @@ def outer_barrier(func: Callable, r: float, *constraints: Callable):
 
 
 def barrier_search(
+        func: Callable,
         search_method: Callable, search_params: dict,
         constraints: list[Callable],
         r0: float, r_mult: float,
@@ -29,16 +30,22 @@ def barrier_search(
 
     r = r0
 
+    output = []
+
     while True:
-        p_func = outer_barrier(search_params['func'], r, *constraints)
+        p_func = outer_barrier(func, r, *constraints)
 
-        params['func'] = p_func
+        tmp = []
 
-        output = []
         x, f = search_method(
-            **params,
-            output_receiver=lambda **kwargs: output.append(kwargs)
+            p_func, **params,
+            output_receiver=lambda **kwargs: tmp.append(kwargs)
         )
+
+        for row in tmp:
+            row['constraint_r'] = r
+
+        output.extend(tmp)
 
         max_dev = 0
         for constraint in constraints:
