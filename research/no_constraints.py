@@ -3,11 +3,11 @@ from typing import Callable
 
 import numpy as np
 
-import output.images as img
 from methods.derivation_methods import DerivationMethod
 from methods.gradient_methods import fletcher_reeves, Modification, TerminationCriterion
 from methods.interval_methods import dsk_powell, golden_section
 from research.utils import image_search_path, image_call_and_deviation, table_call_and_deviation
+import output.images as img
 
 
 SEARCH_METHOD = fletcher_reeves
@@ -59,7 +59,7 @@ def research(func: Callable, base_params: dict, real_target: np.array):
 
     image_search_path(
         func, SEARCH_METHOD, params, real_target,
-        'Golden section, ε=1E-2', SUB_DIR, 'golden'
+        'Golden section, ε=0.02', SUB_DIR, 'golden'
     )
 
     params['lambda_method'] = dsk_powell
@@ -67,25 +67,7 @@ def research(func: Callable, base_params: dict, real_target: np.array):
 
     image_search_path(
         func, SEARCH_METHOD, params, real_target,
-        'DSK-Powell, ε=1E-1', SUB_DIR, 'dsk'
-    )
-
-
-    # === RESTART ===
-    image_call_and_deviation(
-        func, SEARCH_METHOD, params,
-        'restart_lambda_threshold', np.linspace(1e-5, 0.5, 128),
-        None, 0.24,
-        real_target,
-        None, 'Restart λ threshold',
-        SUB_DIR, 'restart'
-    )
-
-    params['restart_lambda_threshold'] = 0.24
-
-    image_search_path(
-        func, SEARCH_METHOD, params, real_target,
-        'Restart threshold: λ=0.24', SUB_DIR, 'restart'
+        'DSK-Powell, ε=0.1', SUB_DIR, 'dsk'
     )
 
 
@@ -126,6 +108,17 @@ def research(func: Callable, base_params: dict, real_target: np.array):
     image_search_path(
         func, SEARCH_METHOD, params, real_target,
         'Polak-Ribiere', SUB_DIR, 'polak_ribiere'
+    )
+
+
+    # === RESTART ===
+    image_call_and_deviation(
+        func, SEARCH_METHOD, params,
+        'restart_lambda_threshold', np.linspace(1e-5, 0.5, 128),
+        None, None,
+        real_target,
+        None, 'Restart λ threshold',
+        SUB_DIR, 'restart'
     )
 
 

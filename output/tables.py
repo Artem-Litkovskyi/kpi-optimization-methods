@@ -14,13 +14,13 @@ def calls_and_deviation(results, values1, values2, subdir, filename):
 
     with open(os.path.join(dir_path, filename + '.csv'), 'w') as f:
         # Header
-        f.write(',%s\n' % ',,'.join(values2))
+        f.write('\t%s\n' % '\t\t'.join(values2))
 
         # Rows
         for v, res in zip(values1, results):
 
             # Values
-            calls = (r['calls'] for r in res)
+            calls = (r['output'][-1]['calls'] for r in res)
             devs =  (r['deviation'] for r in res)
-            vs = ('%i,%.2E' % pair for pair in zip(calls, devs))
-            f.write('%s,%s\n' % (v, ','.join(vs)))
+            vs = ('%i\t%.2E' % pair for pair in zip(calls, devs))
+            f.write('%s\t%s\n' % (v, '\t'.join(vs)))

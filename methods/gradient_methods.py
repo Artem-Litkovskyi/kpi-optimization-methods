@@ -22,6 +22,15 @@ def get_func_of_lambda(func: Callable, x_prev: np.array, s: np.array):
     return lambda lamb: func(*(x_prev + lamb * s))
 
 
+def call_counter(f):
+    def wrapped(*args, **kwargs):
+        wrapped.calls += 1
+        return f(*args, **kwargs)
+
+    wrapped.calls = 0
+    return wrapped
+
+
 # =======================================================================================
 def fletcher_reeves(
         func: Callable,
@@ -36,19 +45,25 @@ def fletcher_reeves(
     if x0.dtype != np.float64:
         raise Warning('Method might not work as expected if the x0 vector consists of non-floats')
 
-    f0 = func(*x0)
-    nabla0 = nabla(func, x0, derivation_h, derivation_method, f0=f0)
+    func_w_counter = call_counter(func)
+
+    f0 = func_w_counter(*x0)
+    nabla0 = nabla(func_w_counter, x0, derivation_h, derivation_method, f0=f0)
     s0 = -nabla0
 
     iter_n = 0
 
     while True:
-        func_lamb = get_func_of_lambda(func, x0, s0)
-        lambda_opt_x_interval, lambda_opt_f_interval = sven(func_lamb, 0, delta_lambda)
-        lambda_opt, f1 = lambda_method(func_lamb, lambda_opt_x_interval, lambda_opt_f_interval, lambda_accuracy)
+        for i in range(2):
+            func_lamb = get_func_of_lambda(func_w_counter, x0, s0)
 
-        # print('=' * 100)
-        # print('iter_n', iter_n)
+            lambda_opt_x_interval, lambda_opt_f_interval = sven(func_lamb, 0, delta_lambda)
+            lambda_opt, f1 = lambda_method(func_lamb, lambda_opt_x_interval, lambda_opt_f_interval, lambda_accuracy)
+
+            if restart_lambda_threshold < 0 or lambda_opt > restart_lambda_threshold:
+                break
+
+            s0 = -nabla0  # "restart"
 
         if output_receiver:
             output_receiver(
@@ -61,11 +76,8 @@ def fletcher_reeves(
                 lambda_opt=lambda_opt
             )
 
-        if restart_lambda_threshold > 0 and lambda_opt < restart_lambda_threshold:
-            s0 = -nabla0  # restart
-
         x1 = x0 + lambda_opt * s0
-        nabla1 = nabla(func, x1, derivation_h, derivation_method, f0=f1)
+        nabla1 = nabla(func_w_counter, x1, derivation_h, derivation_method, f0=f1)
 
         if termination_criterion == TerminationCriterion.X_AND_F_CHANGE:
             if np.linalg.norm(x0) == 0:
@@ -83,6 +95,7 @@ def fletcher_reeves(
             terminate = True
 
         if terminate:
+            output_receiver(x=x1, f=f1, calls=func_w_counter.calls)
             return x1, f1
 
         s1 = -nabla1 + _fletcher_reeves_w(nabla0, nabla1, modification) * s0

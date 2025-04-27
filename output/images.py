@@ -25,11 +25,9 @@ def search_path(
         big_xlim = (min(big_xlim[0], constrained_target[0] - pad_big), max(big_xlim[1], constrained_target[0] + pad_big))
         big_ylim = (min(big_ylim[0], constrained_target[1] - pad_big), max(big_ylim[1], constrained_target[1] + pad_big))
 
-    active_target = real_target
-    if constrained_target is not None:
-        active_target = constrained_target
-    small_xlim=(active_target[0] - pad_small, active_target[0] + pad_small)
-    small_ylim=(active_target[1] - pad_small, active_target[1] + pad_small)
+    approx_target = path_points[-1]
+    small_xlim=(approx_target[0] - pad_small, approx_target[0] + pad_small)
+    small_ylim=(approx_target[1] - pad_small, approx_target[1] + pad_small)
 
     # Make data
     x, y = np.meshgrid(np.linspace(*big_xlim, 1024), np.linspace(*big_ylim, 1024))
@@ -46,7 +44,7 @@ def search_path(
         # Feasible region
         if constraints is not None:
             ax[i].imshow(
-                np.logical_not(np.logical_and.reduce([c(x, y) <= 0 for c in constraints])).astype(int),
+                np.logical_not(np.logical_or.reduce([c(x, y) <= 0 for c in constraints])).astype(int),
                 extent=(x.min(), x.max(), y.min(), y.max()), origin='lower', cmap='Greys', alpha=0.3
             )
 
@@ -55,8 +53,9 @@ def search_path(
 
         # Targets
         ax[i].plot(*real_target, 'rx')
+        ax[i].plot(*approx_target, marker='+', mec='limegreen', ms=8)
         if constrained_target is not None:
-            ax[i].plot(*constrained_target, 'gx')
+            ax[i].plot(*constrained_target, 'bx')
 
         # Zoom for left plot
         if i == 0:
@@ -68,9 +67,10 @@ def search_path(
 
     # Decorations
     plt.suptitle(title)
-    handles =[Line2D([], [], color='r', marker='x', linestyle='None', label='Minimum')]
+    handles = [Line2D([], [], color='r', marker='x', linestyle='None', label='Minimum')]
     if constrained_target is not None:
-        handles.append(Line2D([], [], color='g', marker='x', linestyle='None', label='Minimum inside the region'))
+        handles.append(Line2D([], [], color='b', marker='x', linestyle='None', label='Minimum inside the region'))
+    handles.append(Line2D([], [], color='limegreen', marker='+', ms=8, linestyle='None', label='Approximated minimum'))
     plt.legend(handles=handles)
 
     dir_path = os.path.join(IMAGES_DIR, subdir)
@@ -120,7 +120,8 @@ def surface(func, start_point, real_target, xlim, ylim, title, subdir, filename)
 def calls_and_deviation(
         values, calls, deviations,
         change_param, old_v, new_v,
-        title, subdir, filename
+        title, subdir, filename,
+        min_calls=None, max_calls=None, min_dev=None, max_dev=None
 ):
     # plot
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True)
@@ -130,10 +131,22 @@ def calls_and_deviation(
     ax[0].set_xlabel(change_param)
     ax[0].set_ylabel('calls')
 
+    if min_calls is not None:
+        ax[0].set_ylim(bottom=min_calls)
+
+    if max_calls is not None:
+        ax[0].set_ylim(top=max_calls)
+
     ax[1].plot(values, deviations, color='black')
     ax[1].vlines((old_v, new_v), min(deviations), max(deviations), colors=['gray', 'green'], linestyles=['--', '-'])
     ax[1].set_xlabel(change_param)
     ax[1].set_ylabel('deviation')
+
+    if min_dev is not None:
+        ax[0].set_ylim(bottom=min_dev)
+
+    if max_dev is not None:
+        ax[1].set_ylim(top=max_dev)
 
     # decorations
     plt.suptitle(title)

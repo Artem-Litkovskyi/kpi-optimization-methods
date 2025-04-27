@@ -30,16 +30,14 @@ def sven(func: Callable, x0: float, delta0: float):
     delta = delta0
     if f_left >= fs[0] <= f_right:
         return (x_left, x0, x_right), (f_left, fs[0], f_right)
-    elif f_left >= fs[0] >= f_right:
+    elif f_left >= f_right:
         xs.append(x_right)
         fs.append(f_right)
         delta *= 1
-    elif f_left <= fs[0] <= f_right:
+    else:  # f_left <= f_right:
         xs.append(x_left)
         fs.append(f_left)
         delta *= -1
-    else:
-        raise NOT_UNIMODAL_ERROR
 
     # Move forward
     while True:
@@ -189,5 +187,5 @@ def _dsk_powell_approx(func, xs, fs):
     return approx_x, approx_f
 
 
-# def vector_to_str(v):
-#     return '(%s)' % ', '.join(map(lambda x: '%f' % x, v))
+def vector_to_str(v):
+    return '(%s)' % ', '.join(map(lambda x: '%f' % x, v))
