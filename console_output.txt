@@ -1,0 +1,27 @@
+Rendered path "First run" (first_run). Target function calls: 2704. Deviation: 7.67E-07
+Rendered plot "None" (svenn). Change parameter: delta_lambda
+Calculated table (lambda). Change parameters: lambda_method, lambda_accuracy
+Rendered path "Golden section, ε=0.02" (golden). Target function calls: 7778. Deviation: 2.93E-04
+Rendered path "DSK-Powell, ε=0.1" (dsk). Target function calls: 1078. Deviation: 2.41E-06
+Calculated table (derivation). Change parameters: derivation_method, derivation_h
+Rendered path "Symmetric difference, h=1" (derivation). Target function calls: 217. Deviation: 3.47E-09
+Calculated table (termination). Change parameters: termination_criterion, accuracy
+Rendered path "Polak-Ribiere" (polak_ribiere). Target function calls: 324. Deviation: 2.16E-15
+Rendered plot "None" (restart). Change parameter: restart_lambda_threshold
+Rendered path "First run (target inside)" (first_run_inside). Constraint R = 1. Target function calls: 85020. Deviation: 4.21E-01
+Calculated table (derivation_inside). Change parameters: ['search_params', 'derivation_method'], ['search_params', 'derivation_h']
+Rendered path "Symmetric difference, h=0.1 (target inside)" (derivation_inside). Constraint R = 1. Target function calls: 1362. Deviation: 1.32E-14
+Calculated table (lambda_inside). Change parameters: ['search_params', 'lambda_method'], ['search_params', 'lambda_accuracy']
+Rendered path "DSK-Powell, ε=0.01 (target inside)" (lambda_inside). Constraint R = 1. Target function calls: 409. Deviation: 7.85E-16
+Rendered plot "None" (svenn_inside). Change parameter: ['search_params', 'delta_lambda']
+Rendered path "Δλ=0.01 (target inside)" (svenn_inside). Constraint R = 1. Target function calls: 320. Deviation: 4.97E-16
+Rendered path "First run (target outside)" (first_run_outside). Constraint R = 1. Target function calls: 138037. Deviation: 4.23E-01
+Calculated table (derivation_outside). Change parameters: ['search_params', 'derivation_method'], ['search_params', 'derivation_h']
+Rendered path "Symmetric difference, h=0.0001 (target outside)" (derivation_outside). Constraint R = 32. Target function calls: 80785. Deviation: 9.68E-02
+Rendered plot "None" (restart_outside). Change parameter: ['search_params', 'restart_lambda_threshold']
+Rendered plot "None" (restart_outside_zoom). Change parameter: ['search_params', 'restart_lambda_threshold']
+Rendered path "Restart λ threshold: λ=0.001 (target outside)" (restart_outside). Constraint R = 128. Target function calls: 176. Deviation: 9.31E-04
+Calculated table (lambda_outside). Change parameters: ['search_params', 'lambda_method'], ['search_params', 'lambda_accuracy']
+Rendered path "DSK-Powell, ε=0.01 (target outside)" (lambda_outside). Constraint R = 128. Target function calls: 176. Deviation: 9.31E-04
+Rendered path "First run (target outside, concave region)" (first_run_concave). Constraint R = 128. Target function calls: 186. Deviation: 1.09E-03
+Rendered path "Another region" (change_region_concave). Constraint R = 512. Target function calls: 400. Deviation: 8.05E-01

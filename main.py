@@ -18,26 +18,27 @@ def root_func(x1, x2):
 
 # === RESEARCH ===
 def main():
-    # params = {
-    #     'x0': X0,
-    #     'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 0.1,
-    #     'lambda_method': dsk_powell, 'delta_lambda': 0.1, 'lambda_accuracy': 0.01,
-    #     'modification': Modification.FLETCHER_REEVES,
-    #     'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-5,
-    #     'max_iter': 10000
-    # }
-    #
-    # params = no_constraints.research(root_func, params, REAL_TARGET)
-
     params = {
         'x0': X0,
-        'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 1,
-        'lambda_method': dsk_powell, 'delta_lambda': 0.05, 'lambda_accuracy': 1e-1,
+        'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 0.1,
+        'lambda_method': dsk_powell, 'delta_lambda': 0.1, 'lambda_accuracy': 0.01,
         'modification': Modification.FLETCHER_REEVES,
-        'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-9,
-        'max_iter': 10000,
-        # 'restart_lambda_threshold': 0.24
+        'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-5,
+        'max_iter': 10000
     }
+
+    params = no_constraints.research(root_func, params, REAL_TARGET)
+
+    # params = {
+    #     'x0': X0,
+    #     'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 1,
+    #     'lambda_method': dsk_powell, 'delta_lambda': 0.05, 'lambda_accuracy': 1e-1,
+    #     'modification': Modification.POLAK_RIBIERE,
+    #     'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-9,
+    #     'max_iter': 10000
+    # }
+
+    params['modification'] = Modification.FLETCHER_REEVES
 
     with_constraints.research(root_func, params, REAL_TARGET)
 

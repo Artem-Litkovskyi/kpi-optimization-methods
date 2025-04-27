@@ -26,7 +26,7 @@ def image_search_path(
     )
 
     # Additional console log
-    message = 'Rendered "%s" (%s)' % (title, filename)
+    message = 'Rendered path "%s" (%s)' % (title, filename)
 
     if 'constraint_r' in output[-1]:
         message += '. Constraint R = %.00f' % output[-1]['constraint_r']
@@ -62,6 +62,10 @@ def image_call_and_deviation(
         min_calls=min_calls, max_calls=max_calls, min_dev=min_dev, max_dev=max_dev
     )
 
+    # Additional console log
+    message = 'Rendered plot "%s" (%s). Change parameter: %s' % (title, filename, change_param)
+    print(message)
+
 
 # === TABLES ===
 def table_call_and_deviation(
@@ -84,6 +88,10 @@ def table_call_and_deviation(
         map(lambda v: '%.2E' % v, values2),
         subdir, filename
     )
+
+    # Additional console log
+    message = 'Calculated table (%s). Change parameters: %s, %s' % (filename, change_param1, change_param2)
+    print(message)
 
 
 def _smart_value_to_str(v):

@@ -44,7 +44,7 @@ def search_path(
         # Feasible region
         if constraints is not None:
             ax[i].imshow(
-                np.logical_not(np.logical_or.reduce([c(x, y) <= 0 for c in constraints])).astype(int),
+                np.logical_not(np.logical_and.reduce([c(x, y) <= 0 for c in constraints])).astype(int),
                 extent=(x.min(), x.max(), y.min(), y.max()), origin='lower', cmap='Greys', alpha=0.3
             )
 

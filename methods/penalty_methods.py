@@ -5,17 +5,32 @@ import numpy as np
 
 
 # === BARRIER GENERATORS ===
-def get_barrier_circle(x: float, y: float, r: float, invert: bool):
+def barrier_circle(x: float, y: float, r: float, invert: bool):
     return lambda x1, x2: _inv((x1 - x) ** 2 + (x2 - y) ** 2 - r ** 2, invert)
 
 
-def get_barrier_line(x: float, y: float, angle: float, invert: bool):
+def barrier_line(x: float, y: float, angle: float, invert: bool):
     if angle == -90:
         return lambda x1, x2: _inv((x1 - x), invert)
     elif angle == 90:
         return lambda x1, x2: _inv(-(x1 - x), invert)
 
     return lambda x1, x2: _inv(np.tan(np.deg2rad(angle)) * (x1 - x) + y - x1, invert)
+
+
+def barrier_ellipse(x: float, y: float, a: float, b: float, angle: float, invert: bool):
+    theta = np.deg2rad(angle)
+    sin_theta = np.sin(theta)
+    cos_theta = np.cos(theta)
+
+    k1 = (a * sin_theta) ** 2 + (b * cos_theta) ** 2
+    k2 = 2 * (b ** 2 - a ** 2) * sin_theta * cos_theta
+    k3 = (a * cos_theta) ** 2 + (b * sin_theta) ** 2
+    k4 = -2 * k1 * x - k2 * y
+    k5 = -k2 * x - 2 * k3 * y
+    k6 = k1 * x ** 2 + k2 * x * y + k3 * y ** 2 - a ** 2 * b ** 2
+
+    return lambda x1, x2: _inv(k1 * x1 ** 2 + k2 * x1 * x2 + k3 * x2 ** 2 + k4 * x1 + k5 * x2 + k6, invert)
 
 
 def _inv(v: float, invert: bool):
@@ -56,7 +71,6 @@ def barrier_search(
     iter_n = 0
 
     while True:
-        print('BARRIR ++++++++++++++++++++++++++++++++++++++++++++++++++++++++', r)
         p_func = outer_barrier(func, r, *constraints)
 
         output = []
