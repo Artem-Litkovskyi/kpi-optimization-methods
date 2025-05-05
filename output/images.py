@@ -12,25 +12,28 @@ IMAGES_DIR = 'images'
 
 def search_path(
         func, real_target, path_points, title, subdir, filename,
-        levels_n=7, pad_big=0.25, pad_small=0.05,
+        levels_n=7, pixels_per_unit=256,
+        pad_big_x=0.25, pad_big_y=0.25, pad_small_x=0.05, pad_small_y=0.05,
         constraints=None, constrained_target=None
 ):
     path_xs = [p[0] for p in path_points]
     path_ys = [p[1] for p in path_points]
 
     # Calculate plot limits
-    big_xlim = (min(*path_xs, real_target[0]) - pad_big, max(*path_xs, real_target[0]) + pad_big)
-    big_ylim = (min(*path_ys, real_target[1]) - pad_big, max(*path_ys, real_target[0]) + pad_big)
+    big_xlim = (min(*path_xs, real_target[0]) - pad_big_x, max(*path_xs, real_target[0]) + pad_big_x)
+    big_ylim = (min(*path_ys, real_target[1]) - pad_big_y, max(*path_ys, real_target[0]) + pad_big_y)
     if constrained_target is not None:
-        big_xlim = (min(big_xlim[0], constrained_target[0] - pad_big), max(big_xlim[1], constrained_target[0] + pad_big))
-        big_ylim = (min(big_ylim[0], constrained_target[1] - pad_big), max(big_ylim[1], constrained_target[1] + pad_big))
+        big_xlim = (min(big_xlim[0], constrained_target[0] - pad_big_x), max(big_xlim[1], constrained_target[0] + pad_big_x))
+        big_ylim = (min(big_ylim[0], constrained_target[1] - pad_big_y), max(big_ylim[1], constrained_target[1] + pad_big_y))
 
     approx_target = path_points[-1]
-    small_xlim=(approx_target[0] - pad_small, approx_target[0] + pad_small)
-    small_ylim=(approx_target[1] - pad_small, approx_target[1] + pad_small)
+    small_xlim=(approx_target[0] - pad_small_x, approx_target[0] + pad_small_x)
+    small_ylim=(approx_target[1] - pad_small_y, approx_target[1] + pad_small_y)
 
     # Make data
-    x, y = np.meshgrid(np.linspace(*big_xlim, 1024), np.linspace(*big_ylim, 1024))
+    resolution_x = int((big_xlim[1] - big_xlim[0]) * pixels_per_unit)
+    resolution_y = int((big_ylim[1] - big_ylim[0]) * pixels_per_unit)
+    x, y = np.meshgrid(np.linspace(*big_xlim, resolution_x), np.linspace(*big_ylim, resolution_y))
     z = func(x, y)
     levels = np.linspace(np.min(z), np.max(z), levels_n)
 
@@ -73,10 +76,13 @@ def search_path(
     handles.append(Line2D([], [], color='limegreen', marker='+', ms=8, linestyle='None', label='Approximated minimum'))
     plt.legend(handles=handles)
 
+    # save and close
     dir_path = os.path.join(IMAGES_DIR, subdir)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     plt.savefig(os.path.join(dir_path, 'path_' + filename), dpi=DPI)
+
+    plt.close()
 
 
 def surface(func, start_point, real_target, xlim, ylim, title, subdir, filename):
@@ -111,10 +117,13 @@ def surface(func, start_point, real_target, xlim, ylim, title, subdir, filename)
     # decorations
     plt.suptitle(title)
 
+    # save and close
     dir_path = os.path.join(IMAGES_DIR, subdir)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     plt.savefig(os.path.join(dir_path, 'surface_' + filename), dpi=DPI)
+
+    plt.close()
 
 
 def calls_and_deviation(
@@ -140,7 +149,7 @@ def calls_and_deviation(
     ax[1].plot(values, deviations, color='black')
     ax[1].vlines((old_v, new_v), min(deviations), max(deviations), colors=['gray', 'green'], linestyles=['--', '-'])
     ax[1].set_xlabel(change_param)
-    ax[1].set_ylabel('deviation')
+    ax[1].set_ylabel('$|| f(X_{min}) - f(X^*) ||$')
 
     if min_dev is not None:
         ax[0].set_ylim(bottom=min_dev)
@@ -157,7 +166,10 @@ def calls_and_deviation(
         loc='upper right'
     )
 
+    # save and close
     dir_path = os.path.join(IMAGES_DIR, subdir)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     plt.savefig(os.path.join(dir_path, 'plot_' + filename), dpi=DPI)
+
+    plt.close()

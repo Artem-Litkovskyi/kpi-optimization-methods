@@ -56,16 +56,19 @@ def outer_barrier(func: Callable, r: float, *constraints: Callable):
 
 # === SEARCH ===
 def barrier_search(
-        func: Callable,
+        func: Callable, x0: np.array,
         search_method: Callable, search_params: dict,
         constraints: list[Callable],
         r0: float, r_mult: float,
-        barrier_accuracy: float,
+        accuracy: float,
         max_iter: int = -1,
         output_receiver: Callable = None
 ):
     params = deepcopy(search_params)
 
+    output = []
+
+    x_prev = x0
     r = r0
 
     iter_n = 0
@@ -73,27 +76,23 @@ def barrier_search(
     while True:
         p_func = outer_barrier(func, r, *constraints)
 
-        output = []
+        output_tmp = []
 
         x, f = search_method(
-            p_func, **params,
-            output_receiver=lambda **kwargs: output.append(kwargs)
+            p_func, x_prev, **params,
+            output_receiver=lambda **kwargs: output_tmp.append(kwargs)
         )
 
-        for row in output:
+        for row in output_tmp:
             row['constraint_r'] = r
 
-        max_dev = 0
-        for constraint in constraints:
-            c = constraint(*x)
-            if c <= max_dev:
-                continue
-            max_dev = c
+        output.extend(output_tmp)
 
-        if max_dev <= barrier_accuracy or iter_n == max_iter - 1:
+        if np.linalg.norm(x_prev - x) <= accuracy or iter_n == max_iter - 1:
             for row in output:
                 output_receiver(**row)
             return x, f
 
+        x_prev = x
         r *= r_mult
         iter_n += 1

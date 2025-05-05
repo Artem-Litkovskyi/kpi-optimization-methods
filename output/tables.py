@@ -20,7 +20,7 @@ def calls_and_deviation(results, values1, values2, subdir, filename):
         for v, res in zip(values1, results):
 
             # Values
-            calls = (r['output'][-1]['calls'] for r in res)
-            devs =  (r['deviation'] for r in res)
+            calls = (r['calls'] for r in res)
+            devs =  (r['f_deviation'] for r in res)
             vs = ('%i\t%.2E' % pair for pair in zip(calls, devs))
             f.write('%s\t%s\n' % (v, '\t'.join(vs)))

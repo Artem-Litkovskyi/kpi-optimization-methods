@@ -1,4 +1,5 @@
 from typing import Callable
+import warnings
 
 import numpy as np
 
@@ -74,12 +75,13 @@ def sven(func: Callable, x0: float, delta0: float):
 
 
 # =======================================================================================
-def golden_section(func: Callable, xs: tuple, fs: tuple, accuracy: float):
+def golden_section(func: Callable, xs: tuple, fs: tuple, accuracy: float, max_iter: int = -1):
     """
     :param func: Target unimodal function
     :param xs: (a, b) - interval that contains the min point
     :param fs: (f(a), f(b)) - function values
     :param accuracy: Target interval length
+    :param max_iter: Iterations limit
     :return: x* and f(x*)
     """
 
@@ -95,12 +97,14 @@ def golden_section(func: Callable, xs: tuple, fs: tuple, accuracy: float):
         (xs[0], left_golden_x, right_golden_x, xs[-1]),
         (fs[0], left_golden_f, right_golden_f, fs[-1]),
         length,
-        accuracy
+        accuracy,
+        max_iter,
+        0
     )
 
 
-def _golden_section(func, xs, fs, length, accuracy):
-    # print('xs: %s;\tfs: %s\tL: %0.3f' % (xs, fs, length))
+def _golden_section(func, xs, fs, length, accuracy, max_iter=0, iter_n=0):
+    # print('xs: %s;\tfs: %s\tL: %0.3f\titer_n: %i' % (xs, fs, length, iter_n))
 
     if length <= accuracy:
         return (xs[0] + xs[-1]) / 2, (fs[0] + fs[-1]) / 2
@@ -174,15 +178,19 @@ def dsk_powell(func: Callable, xs: tuple, fs: tuple, accuracy: float):
 
 
 def _dsk_powell_approx(func, xs, fs):
-    a1 = (fs[1] - fs[0]) / (xs[1] - xs[0])
-    a2 = ((fs[2] - fs[0]) / (xs[2] - xs[0]) - a1) / (xs[2] - xs[1])
-    approx_x = (xs[0] + xs[1]) / 2 - a1 / 2 / a2
-    approx_f = func(approx_x)
+    warnings.filterwarnings('error')
 
-    if np.isnan(approx_x):
+    try:
+        a1 = (fs[1] - fs[0]) / (xs[1] - xs[0])
+        a2 = ((fs[2] - fs[0]) / (xs[2] - xs[0]) - a1) / (xs[2] - xs[1])
+        approx_x = (xs[0] + xs[1]) / 2 - a1 / 2 / a2
+        approx_f = func(approx_x)
+    except RuntimeWarning:  # if approx_x is NaN
         i = np.argmin(fs)
         approx_x = xs[i]
         approx_f = fs[i]
+
+    warnings.resetwarnings()
 
     return approx_x, approx_f
 
