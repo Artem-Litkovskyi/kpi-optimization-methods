@@ -32,7 +32,7 @@ def main():
 
     # params = {
     #     'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 0.1,
-    #     'lambda_method': dsk_powell, 'delta_lambda': 0.31, 'lambda_accuracy': 1e-6,
+    #     'lambda_method': dsk_powell, 'delta_lambda': 0.31, 'lambda_accuracy': 1e-5,
     #     'modification': Modification.POLAK_RIBIERE,
     #     'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-8,
     #     'max_iter': 10000

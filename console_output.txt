@@ -5,22 +5,25 @@ Rendered path "Golden section, ε=0.01" (golden). Target function calls: 7779. X
 Rendered path "DSK-Powell, ε=0.1" (dsk). Target function calls: 1079. X deviation: 2.41E-06. F deviation: 1.30E-03
 Calculated table (derivation). Change parameters: derivation_method, derivation_h
 Rendered path "Symmetric difference, h=1" (derivation). Target function calls: 218. X deviation: 3.47E-09. F deviation: 5.02E-05
+Rendered plot "None" (restart). Change parameter: restart_lambda_threshold
+Rendered plot "None" (restart_base). Change parameter: restart_lambda_threshold
+Rendered path "Restart λ threshold: 0.1" (restart). Target function calls: 410. X deviation: 6.36E-10. F deviation: 3.07E-05
 Calculated table (termination). Change parameters: termination_criterion, accuracy
 Rendered path "Polak-Ribiere" (polak_ribiere). Target function calls: 359. X deviation: 2.20E-15. F deviation: 3.94E-08
 Rendered plot "None" (repeat_svenn). Change parameter: delta_lambda
 Rendered path "Svenn, Δλ=0.31" (repeat_svenn). Target function calls: 267. X deviation: 6.47E-16. F deviation: 2.79E-08
 Calculated table (repeat_lambda). Change parameters: lambda_method, lambda_accuracy
+Rendered path "DSK-Powell, ε=0.00001" (repeat_lambda). Target function calls: 221. X deviation: 2.22E-16. F deviation: 2.65E-08
 Calculated table (repeat_derivation). Change parameters: derivation_method, derivation_h
-Rendered plot "None" (restart). Change parameter: restart_lambda_threshold
-Rendered path "Restart λ threshold: 0.01" (restart). Target function calls: 260. X deviation: 0.00E+00. F deviation: 0.00E+00
-Rendered path "Another start point" (start_point). Target function calls: 434. X deviation: 0.00E+00. F deviation: 0.00E+00
+Rendered path "Symmetric difference, h=0.1" (repeat_derivation). Target function calls: 253. X deviation: 4.71E-16. F deviation: 1.83E-08
+Rendered path "Another start point" (start_point). Target function calls: 438. X deviation: 0.00E+00. F deviation: 0.00E+00
 NO CONSTRAINTS BEST RESULT:
-X: [1. 1.], F: 0.00000000, iterations: 13, calls: 241
+X: [1. 1.], F: 0.00000002, iterations: 14, calls: 252
 
-Rendered path "Target inside #1" (inside1). Constraint R = 2.00. Target function calls: 282. X deviation: 0.00E+00. F deviation: 0.00E+00
+Rendered path "Target inside #1" (inside1). Constraint R = 2.00. Target function calls: 212. X deviation: 1.57E-16. F deviation: 1.05E-08
 Rendered path "Target inside #2" (inside2). Constraint R = 2.00. Target function calls: 296. X deviation: 0.00E+00. F deviation: 0.00E+00
-Rendered path "Target inside #3" (inside3). Constraint R = 2.00. Target function calls: 293. X deviation: 1.57E-16. F deviation: 1.05E-08
-Rendered path "Target outside #1" (outside1). Constraint R = 512.00. Target function calls: 14695. X deviation: 8.77E-03. F deviation: 4.62E-03
-Rendered path "Target outside #2" (outside2). Constraint R = 512.00. Target function calls: 14584. X deviation: 8.82E-03. F deviation: 4.67E-03
-Rendered path "Target outside, concave region #1" (concave1). Constraint R = 512.00. Target function calls: 14546. X deviation: 8.77E-03. F deviation: 4.61E-03
-Rendered path "Target outside, concave region #2" (concave2). Constraint R = 512.00. Target function calls: 13195. X deviation: 1.52E+00. F deviation: 6.28E-01
+Rendered path "Target outside #1.1" (outside1_1). Constraint R = 2048.00. Target function calls: 697329. X deviation: 5.01E-02. F deviation: 6.78E-02
+Rendered path "Target outside #1.2" (outside1_2). Constraint R = 1024.00. Target function calls: 1950. X deviation: 8.76E-03. F deviation: 4.70E-03
+Rendered path "Target outside #2" (outside2). Constraint R = 1024.00. Target function calls: 1863. X deviation: 8.66E-03. F deviation: 4.58E-03
+Rendered path "Target outside, concave region #1" (concave1). Constraint R = 1024.00. Target function calls: 1958. X deviation: 8.76E-03. F deviation: 4.69E-03
+Rendered path "Target outside, concave region #2" (concave2). Constraint R = 64.00. Target function calls: 385. X deviation: 1.52E+00. F deviation: 6.28E-01

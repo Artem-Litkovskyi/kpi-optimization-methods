@@ -93,6 +93,35 @@ def research(func: Callable, x0: np.array, base_params: dict, real_target_x: np.
     )
 
 
+    # === RESTART ===
+    image_call_and_deviation(
+        func, x0, SEARCH_METHOD, params,
+        'restart_lambda_threshold', np.linspace(1e-5, 0.5, 128),
+        None, None,
+        real_target_x, real_target_f,
+        None, 'Restart λ threshold',
+        SUB_DIR, 'restart'
+    )
+
+    image_call_and_deviation(
+        func, x0, SEARCH_METHOD, base_params,
+        'restart_lambda_threshold', np.linspace(1e-5, 0.5, 128),
+        None, 1e-1,
+        real_target_x, real_target_f,
+        None, 'Restart λ threshold',
+        SUB_DIR, 'restart_base'
+    )
+
+    tmp_params = deepcopy(base_params)
+    tmp_params['restart_lambda_threshold'] = 1e-1
+
+    image_search_path(
+        func, x0, SEARCH_METHOD, tmp_params,
+        real_target_x, real_target_f,
+        'Restart λ threshold: 0.1', SUB_DIR, 'restart'
+    )
+
+
     # === TERMINATION ===
     table_call_and_deviation(
         func, x0, SEARCH_METHOD, params,
@@ -144,7 +173,13 @@ def research(func: Callable, x0: np.array, base_params: dict, real_target_x: np.
         SUB_DIR, 'repeat_lambda'
     )
 
-    params['lambda_accuracy'] = 1e-6
+    params['lambda_accuracy'] = 1e-5
+
+    image_search_path(
+        func, x0, SEARCH_METHOD, params,
+        real_target_x, real_target_f,
+        'DSK-Powell, ε=0.00001', SUB_DIR, 'repeat_lambda'
+    )
 
 
     # === DERIVATION 2 ===
@@ -158,26 +193,11 @@ def research(func: Callable, x0: np.array, base_params: dict, real_target_x: np.
 
     params['derivation_h'] = 1e-1
 
-
-    # === RESTART ===
-    image_call_and_deviation(
-        func, x0, SEARCH_METHOD, params,
-        'restart_lambda_threshold', np.linspace(1e-5, 0.5, 128),
-        None, 1e-2,
-        real_target_x, real_target_f,
-        None, 'Restart λ threshold',
-        SUB_DIR, 'restart'
-    )
-
-    params['restart_lambda_threshold'] = 1e-2
-
     image_search_path(
         func, x0, SEARCH_METHOD, params,
         real_target_x, real_target_f,
-        'Restart λ threshold: 0.01', SUB_DIR, 'restart'
+        None, SUB_DIR, 'final'
     )
-
-    params.pop('restart_lambda_threshold')
 
 
     # === START POINT ===

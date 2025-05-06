@@ -5,7 +5,6 @@ import numpy as np
 
 
 GOLDEN_SECTION_A = 2 / (3 + np.sqrt(5))
-NOT_UNIMODAL_ERROR = ValueError('Function isn\'t unimodal')
 
 
 # =======================================================================================
@@ -195,5 +194,5 @@ def _dsk_powell_approx(func, xs, fs):
     return approx_x, approx_f
 
 
-def vector_to_str(v):
-    return '(%s)' % ', '.join(map(lambda x: '%f' % x, v))
+# def vector_to_str(v):
+#     return '(%s)' % ', '.join(map(lambda x: '%f' % x, v))
