@@ -32,8 +32,10 @@ def image_search_path(
 
     constraints = search_params.get('constraints')
 
+    separated_output = separate_output(output)
+
     img.search_path(
-        func, real_target_x, [r['x'] for r in output], title, subdir, filename,
+        func, real_target_x, [[r['x'] for r in i] for i in separated_output], title, subdir, filename,
         levels_n=levels_n, pixels_per_unit=pixels_per_unit,
         pad_big_x=pad_big_x, pad_big_y=pad_big_y, pad_small_x=pad_small_x, pad_small_y=pad_small_y,
         constraints=constraints, constrained_target=constrained_target_x
@@ -123,8 +125,41 @@ def _smart_value_to_str(v):
     return str(v)
 
 
+def table_penalty_method_iters(func, x0, search_method, search_params, subdir, filename):
+    output = []
+
+    func.calls = 0
+    search_method(func, x0, **search_params, output_receiver=lambda **kwargs: output.append(kwargs))
+
+    tbl.penalty_method_iters(separate_output(output), subdir, filename)
+
+    # Additional console log
+    message = 'Calculated table (%s). Penalty method iterations.' % filename
+    print(message)
+
+
 
 # === OTHER ===
+def separate_output(output):
+    separated_output = []
+
+    tmp = []
+    for row in output:
+        if len(tmp) == 0:
+            tmp.append(row)
+            continue
+
+        if row['iter_n'] == 0:
+            separated_output.append(tmp)
+            tmp = []
+
+        tmp.append(row)
+
+    separated_output.append(tmp)
+
+    return separated_output
+
+
 def feed_values_2d(
         func, x0, search_method, search_params,
         change_param1, values1, change_param2, values2,

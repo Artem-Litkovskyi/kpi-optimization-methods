@@ -95,7 +95,7 @@ def fletcher_reeves(
             terminate = True
 
         if terminate:
-            output_receiver(iter_n=iter_n, x=x1, f=f1)
+            output_receiver(iter_n=iter_n+1, x=x1, f=f1)
             return x1, f1
 
         s1 = -nabla1 + _fletcher_reeves_w(nabla0, nabla1, modification) * s0

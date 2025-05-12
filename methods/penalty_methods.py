@@ -73,6 +73,8 @@ def barrier_search(
 
     iter_n = 0
 
+    prev_calls = 0  # quick fix
+
     while True:
         p_func = outer_barrier(func, r, *constraints)
 
@@ -83,8 +85,10 @@ def barrier_search(
             output_receiver=lambda **kwargs: output_tmp.append(kwargs)
         )
 
-        for row in output_tmp:
-            row['constraint_r'] = r
+        output_tmp[-1]['constraint_r'] = r
+
+        output_tmp[-1]['calls'] = func.calls - prev_calls  # also quick fix
+        prev_calls = func.calls
 
         output.extend(output_tmp)
 

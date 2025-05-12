@@ -15,15 +15,21 @@ Rendered path "Svenn, Δλ=0.31" (repeat_svenn). Target function calls: 267. X d
 Calculated table (repeat_lambda). Change parameters: lambda_method, lambda_accuracy
 Rendered path "DSK-Powell, ε=0.00001" (repeat_lambda). Target function calls: 221. X deviation: 2.22E-16. F deviation: 2.65E-08
 Calculated table (repeat_derivation). Change parameters: derivation_method, derivation_h
-Rendered path "Symmetric difference, h=0.1" (repeat_derivation). Target function calls: 253. X deviation: 4.71E-16. F deviation: 1.83E-08
+Rendered path "None" (final). Target function calls: 253. X deviation: 4.71E-16. F deviation: 1.83E-08
 Rendered path "Another start point" (start_point). Target function calls: 438. X deviation: 0.00E+00. F deviation: 0.00E+00
+{'derivation_method': <DerivationMethod.SYM_DIFF: 'sym'>, 'derivation_h': 0.1, 'lambda_method': <function dsk_powell at 0x109eba340>, 'delta_lambda': 0.31, 'lambda_accuracy': 1e-05, 'modification': <Modification.POLAK_RIBIERE: 'polak_ribiere'>, 'termination_criterion': <TerminationCriterion.X_AND_F_CHANGE: 1>, 'accuracy': 1e-08, 'max_iter': 10000}
 NO CONSTRAINTS BEST RESULT:
-X: [1. 1.], F: 0.00000002, iterations: 14, calls: 252
+X: (1.00000000; 1.00000000), F: 0.00000002, iterations: 15, calls: 252
 
-Rendered path "Target inside #1" (inside1). Constraint R = 2.00. Target function calls: 212. X deviation: 1.57E-16. F deviation: 1.05E-08
-Rendered path "Target inside #2" (inside2). Constraint R = 2.00. Target function calls: 296. X deviation: 0.00E+00. F deviation: 0.00E+00
-Rendered path "Target outside #1.1" (outside1_1). Constraint R = 2048.00. Target function calls: 697329. X deviation: 5.01E-02. F deviation: 6.78E-02
-Rendered path "Target outside #1.2" (outside1_2). Constraint R = 1024.00. Target function calls: 1950. X deviation: 8.76E-03. F deviation: 4.70E-03
-Rendered path "Target outside #2" (outside2). Constraint R = 1024.00. Target function calls: 1863. X deviation: 8.66E-03. F deviation: 4.58E-03
-Rendered path "Target outside, concave region #1" (concave1). Constraint R = 1024.00. Target function calls: 1958. X deviation: 8.76E-03. F deviation: 4.69E-03
-Rendered path "Target outside, concave region #2" (concave2). Constraint R = 64.00. Target function calls: 385. X deviation: 1.52E+00. F deviation: 6.28E-01
+Rendered path "Target inside #1" (inside1). Constraint R = 10.00. Target function calls: 162. X deviation: 7.25E-11. F deviation: 7.12E-06
+Calculated table (inside1). Penalty method iterations.
+Rendered path "Target inside #2" (inside2). Constraint R = 10.00. Target function calls: 206. X deviation: 1.02E-10. F deviation: 8.45E-06
+Calculated table (inside2). Penalty method iterations.
+Rendered path "Target outside #1" (outside1). Constraint R = 10000.00. Target function calls: 408. X deviation: 5.15E-03. F deviation: 1.99E-03
+Calculated table (outside1). Penalty method iterations.
+Rendered path "Target outside #2" (outside2). Constraint R = 10000.00. Target function calls: 412. X deviation: 5.06E-03. F deviation: 1.93E-03
+Calculated table (outside2). Penalty method iterations.
+Rendered path "Target outside, concave region" (concave1). Constraint R = 10000.00. Target function calls: 420. X deviation: 5.15E-03. F deviation: 1.78E-03
+Calculated table (concave1). Penalty method iterations.
+Rendered path "Target outside, concave region (another start point)" (concave2). Constraint R = 10000.00. Target function calls: 404. X deviation: 5.07E-03. F deviation: 1.94E-03
+Calculated table (concave2). Penalty method iterations.

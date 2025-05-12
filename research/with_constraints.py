@@ -7,7 +7,8 @@ from methods.derivation_methods import DerivationMethod
 from methods.gradient_methods import fletcher_reeves, Modification, TerminationCriterion
 from methods.interval_methods import golden_section, dsk_powell
 from methods.penalty_methods import barrier_search, barrier_circle, barrier_line, barrier_ellipse
-from research.utils import image_search_path, image_call_and_deviation, table_call_and_deviation
+from research.utils import image_search_path, image_call_and_deviation, table_call_and_deviation, \
+    table_penalty_method_iters
 from output import images as img
 
 
@@ -20,7 +21,7 @@ def research(func: Callable, x0: np.array, base_params: dict, real_target_x: np.
         'search_method': fletcher_reeves,
         'search_params': deepcopy(base_params),
         'r0': 1,
-        'r_mult': 2,
+        'r_mult': 10,
         'accuracy': 1e-4,
         'max_iter': 12
     }
@@ -28,7 +29,7 @@ def research(func: Callable, x0: np.array, base_params: dict, real_target_x: np.
     params = part1_target_inside(func, x0, params, real_target_x, real_target_f)
 
     params = part2_target_outside(func, x0, params, real_target_x, real_target_f)
-    
+
     params = part3_target_outside_concave(func, x0, params, real_target_x, real_target_f)
 
     return params
@@ -44,18 +45,18 @@ def part1_target_inside(func, x0, base_params, real_target_x, real_target_f):
         'Target inside #1',
         SUB_DIR, 'inside1'
     )
+    table_penalty_method_iters(func, x0, SEARCH_METHOD, params, SUB_DIR, 'inside1')
 
-    params['search_params']['lambda_accuracy'] = 1e-4
+    x0_new = np.array((75, 25), dtype=np.float64)
     image_search_path(
-        func, np.array((75, 25), dtype=np.float64), SEARCH_METHOD, params,
+        func, x0_new, SEARCH_METHOD, params,
         real_target_x, real_target_f,
         'Target inside #2',
         SUB_DIR, 'inside2',
         levels_n=21, pixels_per_unit=32,
         pad_big_x=5, pad_big_y=10, pad_small_x=1, pad_small_y=1,
     )
-
-    params['search_params']['lambda_accuracy'] = 1e-5
+    table_penalty_method_iters(func, x0_new, SEARCH_METHOD, params, SUB_DIR, 'inside2')
     
     return params
 
@@ -73,30 +74,22 @@ def part2_target_outside(func, x0, base_params, real_target_x, real_target_f):
         func, x0,
         SEARCH_METHOD, params,
         real_target_x, real_target_f,
-        'Target outside #1.1',
-        SUB_DIR, 'outside1_1',
+        'Target outside #1',
+        SUB_DIR, 'outside1',
         constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f,
     )
+    table_penalty_method_iters(func, x0, SEARCH_METHOD, params, SUB_DIR, 'outside1')
 
-    params['search_params']['accuracy'] = 1e-5
-
+    x0_new = np.array((2, 1), dtype=np.float64)
     image_search_path(
-        func, x0,
-        SEARCH_METHOD, params,
-        real_target_x, real_target_f,
-        'Target outside #1.2',
-        SUB_DIR, 'outside1_2',
-        constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f,
-    )
-
-    image_search_path(
-        func, np.array((2, 1), dtype=np.float64),
+        func, x0_new,
         SEARCH_METHOD, params,
         real_target_x, real_target_f,
         'Target outside #2',
         SUB_DIR, 'outside2',
         constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f,
     )
+    table_penalty_method_iters(func, x0_new, SEARCH_METHOD, params, SUB_DIR, 'outside2')
     
     return params
 
@@ -117,29 +110,23 @@ def part3_target_outside_concave(func, x0, base_params, real_target_x, real_targ
         func, x0,
         SEARCH_METHOD, params,
         real_target_x, real_target_f,
-        'Target outside, concave region #1',
+        'Target outside, concave region',
         SUB_DIR, 'concave1',
         constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f
     )
+    table_penalty_method_iters(func, x0, SEARCH_METHOD, params, SUB_DIR, 'concave1')
 
-
-    # === CHANGE REGION ===
-    params['constraints'] = [
-        barrier_circle(0, 0, 1, False),
-        barrier_ellipse(0.5, -0.5, 0.6, 1.4, 45, True)
-    ]
-
-    target_wolfram_x = np.array((0.714146, 0.699997))
-    target_wolfram_f = func(*target_wolfram_x)
-
+    x0_new = np.array((1.25, 0.8), dtype=np.float64)
     image_search_path(
-        func, np.array((-0.6, -0.6), dtype=np.float64),
+        func, x0_new,
         SEARCH_METHOD, params,
         real_target_x, real_target_f,
-        'Target outside, concave region #2',
+        'Target outside, concave region (another start point)',
         SUB_DIR, 'concave2',
-        constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f
+        constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f,
+        pad_big_x=0.5, pad_big_y=0.5
     )
+    table_penalty_method_iters(func, x0, SEARCH_METHOD, params, SUB_DIR, 'concave2')
 
 
     return params

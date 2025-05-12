@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib import cm
-
+from matplotlib.rcsetup import cycler
 
 DPI = 200
 IMAGES_DIR = 'images'
@@ -16,17 +16,18 @@ def search_path(
         pad_big_x=0.25, pad_big_y=0.25, pad_small_x=0.05, pad_small_y=0.05,
         constraints=None, constrained_target=None
 ):
-    path_xs = [p[0] for p in path_points]
-    path_ys = [p[1] for p in path_points]
-
     # Calculate plot limits
-    big_xlim = (min(*path_xs, real_target[0]) - pad_big_x, max(*path_xs, real_target[0]) + pad_big_x)
-    big_ylim = (min(*path_ys, real_target[1]) - pad_big_y, max(*path_ys, real_target[0]) + pad_big_y)
+    path_min_x = min([min([p[0] for p in r]) for r in path_points])
+    path_max_x = max([max([p[0] for p in r]) for r in path_points])
+    path_min_y = min([min([p[1] for p in r]) for r in path_points])
+    path_max_y = max([max([p[1] for p in r]) for r in path_points])
+    big_xlim = (min(path_min_x, real_target[0]) - pad_big_x, max(path_max_x, real_target[0]) + pad_big_x)
+    big_ylim = (min(path_min_y, real_target[1]) - pad_big_y, max(path_max_y, real_target[0]) + pad_big_y)
     if constrained_target is not None:
         big_xlim = (min(big_xlim[0], constrained_target[0] - pad_big_x), max(big_xlim[1], constrained_target[0] + pad_big_x))
         big_ylim = (min(big_ylim[0], constrained_target[1] - pad_big_y), max(big_ylim[1], constrained_target[1] + pad_big_y))
 
-    approx_target = path_points[-1]
+    approx_target = path_points[-1][-1]
     small_xlim=(approx_target[0] - pad_small_x, approx_target[0] + pad_small_x)
     small_ylim=(approx_target[1] - pad_small_y, approx_target[1] + pad_small_y)
 
@@ -38,6 +39,8 @@ def search_path(
     levels = np.linspace(np.min(z), np.max(z), levels_n)
 
     # Plot
+    prop_cycle = cycler(color=['k', 'tab:blue', 'tab:orange', 'tab:green', 'tab:red'])
+    plt.rc('axes', prop_cycle=prop_cycle)
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), constrained_layout=True)
 
     for i in range(2):
@@ -52,7 +55,10 @@ def search_path(
             )
 
         # Search path
-        ax[i].plot(path_xs, path_ys, marker='.', color='k')
+        for r in path_points:
+            path_xs = [p[0] for p in r]
+            path_ys = [p[1] for p in r]
+            ax[i].plot(path_xs, path_ys, marker='.')
 
         # Targets
         ax[i].plot(*real_target, 'rx')

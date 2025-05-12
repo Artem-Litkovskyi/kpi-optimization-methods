@@ -30,19 +30,21 @@ def main():
 
     params = no_constraints.research(root_func, X0, params, REAL_TARGET_X, REAL_TARGET_F)
 
-    # params = {
-    #     'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 0.1,
-    #     'lambda_method': dsk_powell, 'delta_lambda': 0.31, 'lambda_accuracy': 1e-5,
-    #     'modification': Modification.POLAK_RIBIERE,
-    #     'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-8,
-    #     'max_iter': 10000
-    # }
+    print(params)
 
     output = []
     root_func.calls = 0
     x, f = fletcher_reeves(root_func, X0, **params, output_receiver=lambda **kwargs: output.append(kwargs))
     print('NO CONSTRAINTS BEST RESULT:')
-    print('X: %s, F: %.8f, iterations: %i, calls: %i\n' % (x, f, output[-1]['iter_n'], root_func.calls))
+    print('X: (%.8f; %.8f), F: %.8f, iterations: %i, calls: %i\n' % (x[0], x[1], f, output[-1]['iter_n'], root_func.calls))
+
+    params = {
+        'derivation_method': DerivationMethod.SYM_DIFF, 'derivation_h': 0.1,
+        'lambda_method': dsk_powell, 'delta_lambda': 0.31, 'lambda_accuracy': 1e-4,
+        'modification': Modification.POLAK_RIBIERE,
+        'termination_criterion': TerminationCriterion.X_AND_F_CHANGE, 'accuracy': 1e-4,
+        'max_iter': 10000
+    }
 
     with_constraints.research(root_func, X0, params, REAL_TARGET_X, REAL_TARGET_F)
 
