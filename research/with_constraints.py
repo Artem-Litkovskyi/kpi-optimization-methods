@@ -126,7 +126,7 @@ def part3_target_outside_concave(func, x0, base_params, real_target_x, real_targ
         constrained_target_x=target_wolfram_x, constrained_target_f=target_wolfram_f,
         pad_big_x=0.5, pad_big_y=0.5
     )
-    table_penalty_method_iters(func, x0, SEARCH_METHOD, params, SUB_DIR, 'concave2')
+    table_penalty_method_iters(func, x0_new, SEARCH_METHOD, params, SUB_DIR, 'concave2')
 
 
     return params
